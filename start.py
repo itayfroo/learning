@@ -17,7 +17,15 @@ def user_exists(username):
 def sign_up(username, password):
     if os.path.exists(json_file_path):
         with open(json_file_path, "r") as file:
-            users = json.load(file)
+            file_contents = file.read()
+            if file_contents:
+                try:
+                    users = json.loads(file_contents)
+                except json.JSONDecodeError:
+                    st.error("Error decoding JSON. Please check the file format.")
+                    return
+            else:
+                users = {}
     else:
         users = {}
 
