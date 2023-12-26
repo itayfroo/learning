@@ -1,2 +1,62 @@
-import streamlit
+import streamlit as st
 import json
+import os
+
+# File path for storing user data
+json_file_path = "users.json"
+
+# Function to check if a user exists in the JSON file
+def user_exists(username):
+    if os.path.exists(json_file_path):
+        with open(json_file_path, "r") as file:
+            users = json.load(file)
+            return username in users
+    return False
+
+# Function to sign up a new user
+def sign_up(username, password):
+    if os.path.exists(json_file_path):
+        with open(json_file_path, "r") as file:
+            users = json.load(file)
+    else:
+        users = {}
+
+    if username in users:
+        st.warning("Username is already taken. Please choose another one.")
+    else:
+        users[username] = password
+        with open(json_file_path, "w") as file:
+            json.dump(users, file)
+        st.success("You have successfully signed up!")
+
+# Function to sign in a user
+def sign_in(username, password):
+    if user_exists(username):
+        with open(json_file_path, "r") as file:
+            users = json.load(file)
+            if users[username] == password:
+                st.success("You have successfully logged in!")
+            else:
+                st.warning("Incorrect password. Please check for spelling and try again.")
+    else:
+        st.warning("User does not exist. Please sign up or check the username.")
+
+# Streamlit app
+st.title("User Authentication System")
+
+page = st.sidebar.radio("Navigation", ["Home", "Sign Up", "Sign In"])
+
+if page == "Home":
+    st.header("Welcome to the User Authentication System!")
+elif page == "Sign Up":
+    st.header("Sign Up")
+    username = st.text_input("Enter your username:")
+    password = st.text_input("Enter your password:", type="password")
+    if st.button("Sign Up"):
+        sign_up(username, password)
+elif page == "Sign In":
+    st.header("Sign In")
+    username = st.text_input("Enter your username:")
+    password = st.text_input("Enter your password:", type="password")
+    if st.button("Sign In"):
+        sign_in(username, password)
