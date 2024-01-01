@@ -9,9 +9,23 @@ json_file_path = "users.json"
 def user_exists(username):
     if os.path.exists(json_file_path):
         with open(json_file_path, "r") as file:
-            users = json.load(file)
-            return username in users
-    return False
+            file_contents = file.read()
+            if file_contents:
+                try:
+                    users = json.loads(file_contents)
+                except json.JSONDecodeError:
+                    st.error("Error decoding JSON. Please check the file format.")
+                    return False
+            else:
+                # If the file is empty, initialize users as an empty dictionary
+                users = {}
+                with open(json_file_path, "w") as empty_file:
+                    json.dump(users, empty_file)
+    else:
+        users = {}
+
+    return username in users
+
 
 # Function to sign up a new user
 def sign_up(username, password):
