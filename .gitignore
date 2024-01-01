@@ -1,5 +1,2 @@
-venv/*
-log/*
-*.pyc
-*.cpython*
-_pycache_/*
+# Ignore virtual environment
+venv/
